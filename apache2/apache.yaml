@@ -1,0 +1,10 @@
+--- 
+- name: install apache2 on ubuntu 22
+  hosts: all
+  become: yes
+  tasks: 
+    - name: installation apache2
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: true
+        state: present

@@ -1,0 +1,8 @@
+---
+- name: print my variables
+  hosts: all
+  become: yes
+  tasks: 
+    - name: print my variables
+      ansible.builtin.debug:
+        var: name

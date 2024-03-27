@@ -1,0 +1,6 @@
+---
+- name: install mongo db on ubuntu
+  hosts: all
+  roles:
+    - role: abrararshad.mongo_db_push
+      become: yes

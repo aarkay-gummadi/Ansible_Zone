@@ -1,0 +1,31 @@
+---
+- name: install haproxy on ubuntu
+  hosts: all
+  become: yes
+  tasks: 
+    - name: install haproxy
+      ansible.builtin.apt:
+        name: haproxy
+        update_cache: true
+        state: present
+    - name: start the application
+      ansible.builtin.systemd:
+        name: haproxy
+        enabled: true
+        state: started
+    - name: configure the haproxy server
+      ansible.builtin.copy:
+        src: /etc/haproxy/haproxy.cfg
+        remote_src: true
+        dest: /etc/haproxy/haproxy.cfg.bk
+        mode: '0777'
+    - name: copy the service file into haproxyfile
+      ansible.builtin.copy:
+        src: haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg  
+        mode: '0777'
+    - name: start the application
+      ansible.builtin.systemd:
+        name: haproxy
+        enabled: yes
+        state: started     

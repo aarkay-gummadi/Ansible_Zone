@@ -1,0 +1,7 @@
+---
+- name: calling a roles
+  hosts: all
+  become: yes
+  roles:
+    - java
+    - utilities

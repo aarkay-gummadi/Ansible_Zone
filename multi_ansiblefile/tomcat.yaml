@@ -1,0 +1,55 @@
+---
+- name: install tomcat on ubuntu 22
+  hosts: appservers
+  become: yes
+  tasks: 
+    - name: install java
+      ansible.builtin.package:
+        name: "{{ java_package_name }}"
+        state: present
+    - name: create group
+      ansible.builtin.group:
+        name: "{{ gropu_name }}"
+        state: present     
+    - name: create a tomcat user
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        create_home: yes
+        group: "{{ gropu_name }}"
+        home: "{{ user_home }}"
+        shell: "{{ user_shell }}"
+        state: present
+    - name: "extract tomcat {{ tomcat_version }}"
+      ansible.builtin.unarchive:
+        src: "https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        remote_src: yes
+        dest: "{{ user_home }}"
+    - name: link in the file
+      ansible.builtin.file:
+        src: "{{ user_home }}/apache-tomcat-{{ tomcat_version }}"
+        path: "{{ user_home }}/latest"    
+        owner: "{{ user_name }}"
+        state: link
+        mode: '0777'
+    - name: chown
+      ansible.builtin.file:
+        dest: "{{ user_home }}"
+        recurse: true
+        group: "{{ gropu_name }}"
+        owner: "{{ user_name }}"
+        state: directory
+        mode: '0777'
+    - name: shell file
+      ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"
+    - name: create tomcat service file
+      ansible.builtin.copy:
+        src: "{{ tomcat_service_name }}"
+        dest: "/etc/systemd/system/{{ tomcat_service_name }}"
+        owner: "{{ user_name }}"
+        group: "{{ gropu_name }}" 
+    - name: create systemd fiels
+      ansible.builtin.systemd:
+        name: "{{ tomcat_service_name }}"
+        daemon_reload: true
+        enabled: true
+        state: restarted      

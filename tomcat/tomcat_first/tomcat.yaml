@@ -30,9 +30,9 @@
         dest: /opt/tomcat
     - name: create a symbolic link
       ansible.builtin.file:
-      src: /opt/tomcat/apache-tomcat-10.0.27
-      dest: /opt/tomcat/latest
-      state: link
+        src: /opt/tomcat/apache-tomcat-10.0.27
+        dest: /opt/tomcat/latest
+        state: link
     - name: change permissions
       ansible.builtin.file:
         dest: /opt/tomcat

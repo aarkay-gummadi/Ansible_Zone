@@ -1,0 +1,20 @@
+[Unit]
+Description=Apache Tomcat Server
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+
+Environment=CATALINA_PID=/usr/local/tomcat10/temp/tomcat.pid
+Environment=CATALINA_HOME=/usr/local/tomcat10
+Environment=CATALINA_BASE=/usr/local/tomcat10
+
+ExecStart=/usr/local/tomcat10/bin/catalina.sh start
+ExecStop=/usr/local/tomcat10/bin/catalina.sh stop
+
+RestartSec=10
+Restart=always
+[Install]
+WantedBy=multi-user.target

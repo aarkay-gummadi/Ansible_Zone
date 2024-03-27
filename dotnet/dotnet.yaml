@@ -1,0 +1,23 @@
+--- 
+- name: install the dotnet 7 on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: download the dotnet file
+      ansible.builtin.get_url:
+        url: https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb 
+        dest: /home/ubuntu/packages-microsoft-prod.deb
+    - name: dpkg
+      ansible.builtin.dpkg_selections:
+        name: packages-microsoft-prod.deb
+        selection: install
+    - name: install the dotnet 7 
+      ansible.builtin.apt:
+        name: dotnet-sdk-7.0
+        update_cache: yes
+        state: present
+    - name: install the aspnetcore runtime 7.0 
+      ansible.builtin.apt:
+        name: aspnetcore-runtime-7.0
+        update_cache: yes
+        state: present

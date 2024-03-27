@@ -1,0 +1,10 @@
+---
+# vars file for skeleton
+    java_package_name: openjdk-11-jdk
+    user_name: tomcat
+    gropu_name: tomcat
+    user_home: /opt/tomcat
+    tomcat_version: "10.0.27"
+    tomcat_major_version: "10"
+    tomcat_service_name: tomcat.service
+    user_shell: /bin/false

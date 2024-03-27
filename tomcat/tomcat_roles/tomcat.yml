@@ -1,0 +1,8 @@
+---
+- name: install the tomcat on ubuntu 22 using roles
+  hosts: all
+  become: yes
+  roles: 
+    - role: tomcat-roles
+      state: present
+  

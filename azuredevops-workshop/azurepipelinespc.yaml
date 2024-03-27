@@ -1,0 +1,24 @@
+
+
+
+* This file is for spring-petclinic
+
+```yaml
+---
+pool:
+  name: "Azure Pipelines"
+  vmImage: ubuntu-18.04
+
+trigger: 
+  - master
+
+steps:
+  - task: Maven@3
+    inputs: 
+      mavenPomFile: 'pom.xml'
+      goals: 'package'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      jdkVersionOptions: '1.8'    
+```
+

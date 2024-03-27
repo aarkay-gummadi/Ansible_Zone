@@ -1,0 +1,12 @@
+---
+pool:
+  name: 'Azure Pipelines'
+  vmImage: ubuntu-latest
+
+trigger:
+  - master
+
+steps:
+  - template: ./templates/maven-build.yaml
+    parameters: 
+      jdkVersion: '1.8'    

@@ -1,0 +1,55 @@
+---
+- name: installation apache2
+  hosts: ubuntu
+  become: yes
+  become_user: root
+  tasks:
+    - name: Modify SSH configuration
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        state: present
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+    - name: Restart ssh service
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+    - name: Create new user account
+      ansible.builtin.user:
+        name: raj
+        state: present
+        groups: sudo
+    - name: Add user to sudoers
+      ansible.builtin.lineinfile:
+        dest: /etc/sudoers
+        state: present
+        line: "raj ALL=(ALL) NOPASSWD:ALL"
+    - name: jenkins install
+      ansible.builtin.apt:
+        name: apache2
+        update_cache: true  
+        state: present
+    - name: delete /var/www/html/index.html
+      ansible.builtin.file:
+        path: /var/www/html/index.html
+        state: absent    
+    - name: copy the service file into apachefile
+      ansible.builtin.copy:
+        src: ports.conf
+        dest: /etc/apache2/ports.conf  
+        mode: '0777'
+    - name: copy the service file into apachefile
+      ansible.builtin.copy:
+        src: 000-default.conf
+        dest: /etc/apache2/sites-available/000-default.conf  
+        mode: '0777'
+    - name: start the application
+      ansible.builtin.systemd:
+        name: apache2
+        enabled: yes
+        state: started 
+    - name: copy the service file into apachefile
+      ansible.builtin.copy:
+        src: index.html2
+        dest: /var/www/html/index.html2 
+        mode: '0777' 

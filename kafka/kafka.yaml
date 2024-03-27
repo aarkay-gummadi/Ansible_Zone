@@ -1,0 +1,50 @@
+---
+- name: installing the kafka on ubuntu 20.04
+  hosts: all
+  become: yes
+  tasks:
+    - name: install the java on ubuntu
+      ansible.builtin.apt:
+        name: openjdk-11-jre-headless
+        update_cache: yes
+        state: present
+    - name: creating the directory kafka-server
+      ansible.builtin.file: 
+        path: /usr/local/kafka-server
+        state: directory
+    - name: download and install the apache kafka 
+      ansible.builtin.unarchive:
+        src: https://dlcdn.apache.org/kafka/3.4.0/kafka_2.12-3.4.0.tgz
+        dest: /usr/local/kafka-server
+    - name: copy the zookeeper file
+      ansible.builtin.copy: 
+        src: zookeeper.service
+        dest: /etc/systemd/system/zookeeper.service  
+    - name: copy the kafka server file
+      ansible.builtin.copy: 
+        src: kafka.service 
+        dest: /etc/systemd/system/kafka.service 
+    - name: start the zookeeper and kafka 
+      ansible.builtin.systemd:
+        name: kafka zookeeper
+        daemon_reload: yes
+        enabled: yes
+        state: started 
+    - name: clone the code from git
+      ansible.builtin.get_url:
+        url: git clone https://github.com/yahoo/CMAK.git
+        dest: /home/raj
+    - name: copy the configure file 
+      ansible.builtin.copy:
+        src: application.conf
+        dest: CMAK/conf/application.conf  
+    - name: change the directory
+      ansible.builtin.command: chdir=/home/raj/CMAK/./sbt clean dist
+    - name: change the directory
+      ansible.builtin.command: chdir=/home/raj/CMAK/target/universal
+    - name: install the unzip
+      ansible.builtin.apt:
+        name: unzip
+        state: present
+            
+

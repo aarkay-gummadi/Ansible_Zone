@@ -1,0 +1,19 @@
+---
+# handlers file for dotnet
+- name: restart tomcat
+  ansible.builtin.systemd:
+    name: "{{ tomcat_service_name }}"
+    state: restarted    
+- name: enable and restart tomcat
+  ansible.builtin.systemd:
+    name: "{{ tomcat_service_name }}"
+    state: restarted
+- name: shell file permissions
+  ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"   
+- name: chown permissions
+  ansible.builtin.file:
+    dest: "{{ user_home }}"
+    recurse: true
+    group: "{{ group_name }}"
+    owner: "{{ user_name }}"
+    state: directory 

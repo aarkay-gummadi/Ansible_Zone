@@ -1,0 +1,101 @@
+---
+- name: install the tomcat on both ubuntu and centos
+  hosts: all
+  become: yes 
+  tasks: 
+    - name: insall the java on both
+      ansible.builtin.package:
+        name: "{{ java_package_name }}"
+        state: present
+    - name: create group
+      ansible.builtin.group:
+        name: "{{ group_name }}"
+        state: present     
+    - name: create a tomcat user
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        create_home: yes
+        group: "{{ group_name }}"
+        home: "{{ user_home }}"
+        shell: "{{ user_shell }}"
+        state: present
+    - name: get the tomcat stats
+      ansible.builtin.stat:
+        path: "{{ user_home }}/latest/bin/startup.sh"
+      register: tomcat_startup      
+    - name: extract tomcat file 
+      ansible.builtin.unarchive:
+        src: "https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        remote_src: yes
+        dest: "{{ user_home }}"
+      when: not tomcat_startup.stat.exists   
+    - name: link in the file
+      ansible.builtin.file:
+        src: "{{ user_home }}/apache-tomcat-{{ tomcat_version }}"
+        path: "{{ user_home }}/latest"    
+        owner: "{{ user_name }}"
+        state: link
+        mode: '0777'
+    - name: chown permissions
+      ansible.builtin.file:
+        dest: "{{ user_home }}"
+        recurse: true
+        group: "{{ group_name }}"
+        owner: "{{ user_name }}"
+        state: directory
+    - name: shell file
+      ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"   
+      when: not tomcat_startup.stat.exists  
+    - name: Create a systemd unit file in ubuntu
+      ansible.builtin.copy:
+        src: ubuntu.tomcat.service
+        dest: /etc/systemd/system/"{{ tomcat_service_name }}"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Create a systemd unit file in centos
+      ansible.builtin.copy:
+        src: centos.tomcat.service
+        dest: /etc/systemd/system/"{{ tomcat_service_name }}"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: enable and start the service
+      ansible.builtin.systemd:
+        name: "{{ tomcat_service_name }}"
+        daemon_reload: true
+        enabled: true
+        state: started 
+    - name: Enable firewall
+      community.general.ufw:
+        state: enabled
+      when: ansible_os_family == "CentOS"
+    - name: Enable firewall
+      community.general.ufw:
+        state: enabled
+      when: ansible_os_family == "Ubuntu"         
+    - name: copy the file into tomcat users xml file
+      ansible.builtin.copy:
+        src: tomcat-users.xml
+        dest: "{{ user_home }}/latest/conf/tomcat-users.xml"    
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+    - name: copy the manager app context file
+      ansible.builtin.copy:
+        src: context.xml
+        dest: "{{ user_home }}/latest/webapps/manager/META-INF/context.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+    - name: copy the host manager app context file
+      ansible.builtin.copy:
+        src: hostmanager-context.xml
+        dest: "{{ user_home }}/latest/webapps/host-manager/META-INF/context.xml"
+        owner: "{{ user_name }}"
+        group: "{{ group_name }}"
+    - name: create systemd files
+      ansible.builtin.systemd:
+        name: "{{ tomcat_service_name }}"
+        daemon_reload: true
+        enabled: true
+        state: started                   
+        

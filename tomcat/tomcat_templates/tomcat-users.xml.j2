@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Licensed to the Apache Software Foundation (ASF) under one or morecontributor license agreements. See the NOTICE file distributed withthis work for additional information regarding copyright ownership.The ASF licenses this file to You under the Apache License, Version 2.0(the "License"); you may not use this file except in compliance withthe License. You may obtain a copy of the License athttp://www.apache.org/licenses/LICENSE-2.0Unless required by applicable law or agreed to in writing, softwaredistributed under the License is distributed on an "AS IS" BASIS,WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.See the License for the specific language governing permissions andlimitations under the License. -->
+
+-<tomcat-users version="1.0" xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://tomcat.apache.org/xml">
+
+<!--By default, no user is included in the "manager-gui" role requiredto operate the "/manager/html" web application. If you wish to use this app,you must define such a user - the username and password are arbitrary.Built-in Tomcat manager roles: - manager-gui - allows access to the HTML GUI and the status pages - manager-script - allows access to the HTTP API and the status pages - manager-jmx - allows access to the JMX proxy and the status pages - manager-status - allows access to the status pages onlyThe users below are wrapped in a comment and are therefore ignored. If youwish to configure one or more of these users for use with the manager webapplication, do not forget to remove the <!.. ..> that surrounds them. Youwill also need to set the passwords to something appropriate. -->
+
+
+<!--<user username="admin" password="<must-be-changed>" roles="manager-gui"/><user username="robot" password="<must-be-changed>" roles="manager-script"/> -->
+
+
+<!--The sample user and role entries below are intended for use with theexamples web application. They are wrapped in a comment and thus are ignoredwhen reading this file. If you wish to configure these users for use with theexamples web application, do not forget to remove the <!.. ..> that surroundsthem. You will also need to set the passwords to something appropriate. -->
+
+
+<!--<role rolename="tomcat"/><role rolename="role1"/><user username="tomcat" password="<must-be-changed>" roles="tomcat"/><user username="both" password="<must-be-changed>" roles="tomcat,role1"/><user username="role1" password="<must-be-changed>" roles="role1"/> -->
+
+
+<role rolename="admin-gui"/>
+
+<role rolename="manager-gui"/>
+
+<user roles="admin-gui,manager-gui" password="admin" username="admin_password"/>
+
+</tomcat-users>
+   <role rolename="admin-gui"/>
+   <role rolename="manager-gui"/>
+   <user username="{{ tomcat_user_name }}" password="{{ tomcat_user_password }}" roles="admin-gui,manager-gui"/>
+</tomcat-users>

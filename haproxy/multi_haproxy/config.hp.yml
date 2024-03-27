@@ -1,0 +1,95 @@
+---
+- name: "configuring haproxy"
+  hosts: all
+  become: yes
+  tasks:
+  - package:
+      name: haproxy
+      state: present
+  - template:
+      src: "/opt/haproxy.cfg"
+      dest: "/etc/haproxy/haproxy.cfg"
+  - service:
+      name: "haproxy"
+      state: restarted
+  - firewalld:
+      port: "2023/tcp"
+      state: enabled
+      permanent: yes
+      immediate: yes
+
+---
+- name: "Configuring backend servers for load balancer"
+  hosts: all
+  become: yes
+  tasks:
+    - file:
+        path: "/software_dvd"
+        state: directory
+    - mount:
+        src: "/dev/cdrom"
+        path: "/software_dvd"
+        fstype: iso9660
+        state: mounted
+    - yum_repository:
+        baseurl: "file:///software_dvd/Appstream"
+        name: "Appstream"
+        description: "Yum for AppStream"
+        file: "rhel"
+    - yum_repository:
+        baseurl: "file:///software_dvd/AppStream"
+        name: "BaseOS"
+        description: "Yum for BaseOS"
+        file: "rhel"
+        gpgcheck: no
+    - package:
+        name: "httpd"
+        state: present
+    - firewalld:
+        port: "80/tcp"
+        state: enabled
+        permanent: yes
+        immediate: yes
+    - copy:
+        content: "HELLO FROM {{ ansible_hostname }}"
+        dest: "/var/www/html/index.html"
+        notify: "web services"
+    - handlers:
+        name: "web services"
+        service:
+          name: "httpd"
+          state: started
+
+---
+- name: "To configure servers"
+  hosts: all
+  become: yes
+  tasks:
+    - package:
+        name: "httpd"
+        state: present
+    - copy:
+        content: "HELLO FROM {{ ansible_hostname }}"
+        dest: "/var/www/html/index.html"
+        notify: "starting httpd"
+        handlers:
+    - name: "starting httpd"
+        service:
+          name: "httpd"
+          state: started
+
+
+---
+- name: "To configure haproxy"
+  hosts: all
+  become: yes
+  tasks:
+    - package:
+        name: "haproxy"
+        state: present
+    - template:
+        src: "/root/haproxy.cfg"
+        dest: "/etc/haproxy;haproxy.cfg"
+    - service:
+        name: "haproxy"
+        state: started

@@ -1,0 +1,48 @@
+
+
+* It is not working for the running pipeline
+---
+pool:
+  vmImage: ubuntu-latest
+  name: "Azure Pipeline"
+   
+triggers:
+  - master
+
+parameters:
+  - name: version
+    displayName: version
+	  type: string
+	  default: v1.0
+
+steps:
+  - task: Docker@2
+    inputs: 
+      command: build
+      buildContext: 
+      repository: 'StudentCourses'
+      tags: $(parameters.version)-$(Build.BuildID)	
+
+
+* It is working for the running the pipeline
+---
+pool:
+  vmImage: ubuntu-latest
+  name: "Azure Pipeline"
+   
+trigger:
+  - master
+
+parameters:
+  - name: version
+    displayName: version
+	  type: string
+	  default: v1.0
+
+steps:
+  - task: Docker@2
+    inputs: 
+      command: build
+      buildContext: 
+      repository: 'StudentCourses'
+      tags: $(Build.BuildID)	

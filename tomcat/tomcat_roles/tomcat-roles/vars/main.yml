@@ -1,0 +1,13 @@
+---
+# vars file for dotnet
+user_name: tomcat
+group_name: tomcat
+user_home: /opt/tomcat
+tomcat_version: "10.0.27"
+tomcat_major_version: "10"
+tomcat_service_name: tomcat.service.j2
+user_shell: /bin/false
+tomcat_user_name: admin
+tomcat_user_password: admin123
+tomcat_java_home: /usr/lib/jvm/jre
+tomcat_java_opts: -Djava.security.egd=file:///dev/urandom

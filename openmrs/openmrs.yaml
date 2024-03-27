@@ -1,0 +1,11 @@
+---
+- name: to install the openmrs on ubuntu 20
+  hosts: all
+  become: yes
+  tasks: 
+    - name: install the java 
+      ansible.builtin.apt:
+        name: openjdk-11-jdk
+        update_cache: yes
+        state: present
+    - name:     
